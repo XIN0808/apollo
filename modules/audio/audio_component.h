@@ -24,11 +24,7 @@
 #include <string>
 
 #include "cyber/component/component.h"
-#include "modules/audio/common/audio_info.h"
-#include "modules/audio/inference/direction_detection.h"
-#include "modules/audio/inference/moving_detection.h"
-#include "modules/audio/proto/audio.pb.h"
-#include "modules/drivers/microphone/proto/audio.pb.h"
+#include "modules/audio/common/message_process.h"
 #include "modules/localization/proto/localization.pb.h"
 
 /**
@@ -59,8 +55,9 @@ class AudioComponent
 
   AudioInfo audio_info_;
 
-  MovingDetection moving_detection_;
   DirectionDetection direction_detection_;
+  MovingDetection moving_detection_;
+  SirenDetection siren_detection_;
   std::string respeaker_extrinsics_file_;
 };
 

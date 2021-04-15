@@ -21,7 +21,7 @@ cc_library(
     deps = [
         "//cyber/common:log",
         "@boost",
-        "@com_google_glog//:glog",
+        "@com_github_google_glog//:glog",
         "@eigen",
         "@fastrtps",
     ],
@@ -46,7 +46,7 @@ cc_library(
         "//cyber",
         "@com_google_absl//absl/strings",
         "@eigen",
-        "@proj4",
+        "@proj",
     ],
 )
 

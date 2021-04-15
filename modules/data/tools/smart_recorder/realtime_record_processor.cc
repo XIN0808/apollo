@@ -37,6 +37,8 @@
 #include "modules/data/tools/smart_recorder/channel_pool.h"
 #include "modules/data/tools/smart_recorder/interval_pool.h"
 
+using Time = ::apollo::cyber::Time;
+
 namespace apollo {
 namespace data {
 
@@ -126,13 +128,14 @@ bool RealtimeRecordProcessor::Init(const SmartRecordTrigger& trigger_conf) {
   max_backward_time_ = trigger_conf.max_backward_time();
   min_restore_chunk_ = trigger_conf.min_restore_chunk();
   std::vector<std::string> all_channels;
+  std::vector<std::string> black_channels;
   const std::set<std::string>& all_channels_set =
       ChannelPool::Instance()->GetAllChannels();
   std::copy(all_channels_set.begin(), all_channels_set.end(),
             std::back_inserter(all_channels));
   recorder_ = std::make_shared<Recorder>(
       absl::StrCat(source_record_dir_, "/", default_output_filename_), false,
-      all_channels, HeaderBuilder::GetHeader());
+      all_channels, black_channels, HeaderBuilder::GetHeader());
   // Init base
   if (!RecordProcessor::Init(trigger_conf)) {
     AERROR << "base init failed";
@@ -210,7 +213,7 @@ void RealtimeRecordProcessor::PublishStatus(const RecordingState state,
                                             const std::string& message) const {
   SmartRecorderStatus status;
   Header* status_headerpb = status.mutable_header();
-  status_headerpb->set_timestamp_sec(cyber::Time::Now().ToSecond());
+  status_headerpb->set_timestamp_sec(Time::Now().ToSecond());
   status.set_recording_state(state);
   status.set_state_message(message);
   AINFO << "send message with state " << state << ", " << message;

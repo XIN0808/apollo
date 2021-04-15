@@ -17,6 +17,10 @@ if [ -e "/apollo/cyber/setup.bash" ]; then
     . /apollo/cyber/setup.bash
 fi
 
+if [ -e "/apollo/scripts/apollo_auto_complete.bash" ]; then
+    . /apollo/scripts/apollo_auto_complete.bash
+fi
+
 if [ -f /etc/bash_completion.d/bazel ]; then
     . /etc/bash_completion.d/bazel
 fi
@@ -24,8 +28,8 @@ fi
 export EDITOR="vim"
 alias v="vim"
 
-alias bb="bazel build --distdir=/apollo/.cache/distdir"
-alias bt="bazel test  --distdir=/apollo/.cache/distdir"
+alias bb="bazel build"
+alias bt="bazel test"
 
 function inc() {
     local _path="$1"

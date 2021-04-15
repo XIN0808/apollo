@@ -16,7 +16,7 @@
 #include "modules/perception/onboard/component/detection_component.h"
 
 #include "cyber/time/clock.h"
-#include "modules/common/util/perf_util.h"
+#include "modules/common/util/string_util.h"
 #include "modules/perception/common/sensor_manager/sensor_manager.h"
 #include "modules/perception/lidar/common/lidar_error_code.h"
 #include "modules/perception/lidar/common/lidar_frame_pool.h"
@@ -29,8 +29,7 @@ namespace apollo {
 namespace perception {
 namespace onboard {
 
-uint32_t DetectionComponent::s_seq_num_ = 0;
-std::mutex DetectionComponent::s_mutex_;
+std::atomic<uint32_t> DetectionComponent::seq_num_{0};
 
 bool DetectionComponent::Init() {
   LidarDetectionComponentConfig comp_config;
@@ -98,11 +97,7 @@ bool DetectionComponent::InitAlgorithmPlugin() {
 bool DetectionComponent::InternalProc(
     const std::shared_ptr<const drivers::PointCloud>& in_message,
     const std::shared_ptr<LidarFrameMessage>& out_message) {
-  PERF_FUNCTION_WITH_INDICATOR(sensor_name_);
-  {
-    std::unique_lock<std::mutex> lock(s_mutex_);
-    s_seq_num_++;
-  }
+  uint32_t seq_num = seq_num_.fetch_add(1);
   const double timestamp = in_message->measurement_time();
   const double cur_time = Clock::NowInSeconds();
   const double start_latency = (cur_time - timestamp) * 1e3;
@@ -112,7 +107,7 @@ bool DetectionComponent::InternalProc(
 
   out_message->timestamp_ = timestamp;
   out_message->lidar_timestamp_ = in_message->header().lidar_timestamp();
-  out_message->seq_num_ = s_seq_num_;
+  out_message->seq_num_ = seq_num;
   out_message->process_stage_ = ProcessStage::LIDAR_DETECTION;
   out_message->error_code_ = apollo::common::ErrorCode::OK;
 
@@ -122,18 +117,16 @@ bool DetectionComponent::InternalProc(
   frame->timestamp = timestamp;
   frame->sensor_info = sensor_info_;
 
-  PERF_BLOCK_START();
   Eigen::Affine3d pose = Eigen::Affine3d::Identity();
   const double lidar_query_tf_timestamp =
       timestamp - lidar_query_tf_offset_ * 0.001;
   if (!lidar2world_trans_.GetSensor2worldTrans(lidar_query_tf_timestamp,
                                                &pose)) {
     out_message->error_code_ = apollo::common::ErrorCode::PERCEPTION_ERROR_TF;
-    AERROR << "Failed to get pose at time: " << lidar_query_tf_timestamp;
+    AERROR << "Failed to get pose at time: "
+           << FORMAT_TIMESTAMP(lidar_query_tf_timestamp);
     return false;
   }
-  PERF_BLOCK_END_WITH_INDICATOR(sensor_name_,
-                                "detection_1::get_lidar_to_world_pose");
 
   frame->lidar2world_pose = pose;
 
@@ -148,7 +141,6 @@ bool DetectionComponent::InternalProc(
     AERROR << "Lidar detection process error, " << ret.log;
     return false;
   }
-  PERF_BLOCK_END_WITH_INDICATOR(sensor_name_, "detection_2::detect_obstacle");
 
   return true;
 }

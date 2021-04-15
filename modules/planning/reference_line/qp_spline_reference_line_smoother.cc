@@ -22,13 +22,13 @@
 #include <algorithm>
 #include <utility>
 
+#include "modules/common/proto/pnc_point.pb.h"
+
 #include "cyber/common/log.h"
 #include "modules/common/math/vec2d.h"
-#include "modules/common/proto/pnc_point.pb.h"
 #include "modules/common/util/util.h"
 #include "modules/planning/common/planning_gflags.h"
 #include "modules/planning/math/curve_math.h"
-#include "modules/planning/math/smoothing_spline/active_set_spline_2d_solver.h"
 #include "modules/planning/math/smoothing_spline/osqp_spline_2d_solver.h"
 
 namespace apollo {
@@ -37,13 +37,8 @@ namespace planning {
 QpSplineReferenceLineSmoother::QpSplineReferenceLineSmoother(
     const ReferenceLineSmootherConfig& config)
     : ReferenceLineSmoother(config) {
-  if (FLAGS_use_osqp_optimizer_for_reference_line) {
-    spline_solver_.reset(
-        new OsqpSpline2dSolver(t_knots_, config.qp_spline().spline_order()));
-  } else {
-    spline_solver_.reset(new ActiveSetSpline2dSolver(
-        t_knots_, config.qp_spline().spline_order()));
-  }
+  spline_solver_.reset(
+      new OsqpSpline2dSolver(t_knots_, config.qp_spline().spline_order()));
 }
 
 void QpSplineReferenceLineSmoother::Clear() { t_knots_.clear(); }
@@ -211,7 +206,7 @@ bool QpSplineReferenceLineSmoother::Solve() { return spline_solver_->Solve(); }
 
 void QpSplineReferenceLineSmoother::SetAnchorPoints(
     const std::vector<AnchorPoint>& anchor_points) {
-  CHECK_GE(anchor_points.size(), 2);
+  CHECK_GE(anchor_points.size(), 2U);
   anchor_points_ = anchor_points;
 }
 

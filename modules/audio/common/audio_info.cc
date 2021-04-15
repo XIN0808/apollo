@@ -28,11 +28,11 @@ using apollo::drivers::microphone::config::ChannelData;
 using apollo::drivers::microphone::config::ChannelType;
 using apollo::drivers::microphone::config::MicrophoneConfig;
 
-void AudioInfo::Insert(const std::shared_ptr<AudioData>& audio_data) {
+void AudioInfo::Insert(const AudioData& audio_data) {
   std::size_t index = 0;
-  for (const auto& channel_data : audio_data->channel_data()) {
+  for (const auto& channel_data : audio_data.channel_data()) {
     if (channel_data.channel_type() == ChannelType::RAW) {
-      InsertChannelData(index, channel_data, audio_data->microphone_config());
+      InsertChannelData(index, channel_data, audio_data.microphone_config());
       ++index;
     }
   }
@@ -47,7 +47,7 @@ void AudioInfo::InsertChannelData(const std::size_t index,
   int width = microphone_config.sample_width();
   const std::string& data = channel_data.data();
   for (std::size_t i = 0; i < data.length(); i += width) {
-    int16_t signal = ((int16_t(data[i])) << 8) | (0x00ff & data[i + 1]);
+    int16_t signal = ((int16_t(data[i + 1])) << 8) | (0x00ff & data[i]);
     signals_[index].push_back(static_cast<double>(signal));
   }
   std::size_t max_signal_length = static_cast<std::size_t>(

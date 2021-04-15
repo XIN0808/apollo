@@ -2,6 +2,7 @@ load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
 load("//tools:cpplint.bzl", "cpplint")
 
 package(default_visibility = ["//visibility:public"])
+PLANNING_COPTS = ["-DMODULE_NAME=\\\"planning\\\""]
 
 cc_library(
     name = "reference_line",
@@ -13,7 +14,7 @@ cc_library(
         "reference_line.h",
         "reference_point.h",
     ],
-    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    copts = PLANNING_COPTS,
     deps = [
         "//cyber/common:log",
         "//modules/common/math",
@@ -31,7 +32,7 @@ cc_library(
     name = "reference_line_smoother",
     srcs = [],
     hdrs = ["reference_line_smoother.h"],
-    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    copts = PLANNING_COPTS,
     deps = [
         "//modules/planning/proto:reference_line_smoother_config_cc_proto",
     ],
@@ -41,13 +42,12 @@ cc_library(
     name = "qp_spline_reference_line_smoother",
     srcs = ["qp_spline_reference_line_smoother.cc"],
     hdrs = ["qp_spline_reference_line_smoother.h"],
-    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    copts = PLANNING_COPTS,
     deps = [
         ":reference_line",
         ":reference_line_smoother",
         "//modules/planning/math:curve_math",
         "//modules/planning/math:polynomial_xd",
-        "//modules/planning/math/smoothing_spline:active_set_spline_2d_solver",
         "//modules/planning/math/smoothing_spline:osqp_spline_2d_solver",
         "//modules/planning/proto:planning_cc_proto",
         "//modules/planning/proto:reference_line_smoother_config_cc_proto",
@@ -65,7 +65,7 @@ cc_library(
         "spiral_problem_interface.h",
         "spiral_reference_line_smoother.h",
     ],
-    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    copts = PLANNING_COPTS,
     deps = [
         ":reference_line",
         ":reference_line_smoother",
@@ -96,7 +96,7 @@ cc_library(
     name = "discrete_points_reference_line_smoother",
     srcs = ["discrete_points_reference_line_smoother.cc"],
     hdrs = ["discrete_points_reference_line_smoother.h"],
-    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    copts = PLANNING_COPTS,
     deps = [
         ":reference_line",
         ":reference_line_smoother",
@@ -144,7 +144,7 @@ cc_library(
     name = "reference_line_provider",
     srcs = ["reference_line_provider.cc"],
     hdrs = ["reference_line_provider.h"],
-    copts = ["-DMODULE_NAME=\\\"planning\\\""],
+    copts = PLANNING_COPTS,
     deps = [
         ":discrete_points_reference_line_smoother",
         ":qp_spline_reference_line_smoother",

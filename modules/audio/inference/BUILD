@@ -19,6 +19,7 @@ cc_library(
     hdrs = ["direction_detection.h"],
     deps = [
         "//cyber",
+        "//modules/common/math:math_utils",
         "//modules/common/proto:geometry_cc_proto",
         "//third_party:libtorch",
         "@com_github_jbeder_yaml_cpp//:yaml-cpp",
@@ -36,6 +37,16 @@ cc_library(
         "//third_party:libtorch",
     ],
 )
+
+# cc_test(
+#     name = "siren_detection_test",
+#     size = "small",
+#     srcs = ["siren_detection_test.cc"],
+#     deps = [
+#         ":siren_detection",
+#         "@com_google_googletest//:gtest_main",
+#     ],
+# )
 
 cc_test(
     name = "moving_detection_test",

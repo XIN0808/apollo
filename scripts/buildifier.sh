@@ -29,7 +29,7 @@ if [ -z "${BUILDIFIER_CMD}" ]; then
   error "Command 'buildifier' not found in your PATH."
   error "If installed, check your PATH settings."
   error "If not, please refer to https://github.com/bazelbuild/buildtools" \
-        "on how to install it manually."
+    "on how to install it manually."
   exit 1
 fi
 # echo "Installing buildifier..."
@@ -54,11 +54,9 @@ for target in "$@"; do
     fi
   elif [ -d "${target}" ]; then
     #${BUILDIFIER_CMD} -r -lint=fix $@
-    set -x
     find $@ -type f \
       \( -name "BUILD" -or -name "*.BUILD" -or -name "*.bzl" -or -name "*.bazel" \) \
       -exec ${BUILDIFIER_CMD} -lint=fix {} +
-    set +x
 
   else
     error "Bazel files or directories expected, got '${target}'"
@@ -66,4 +64,4 @@ for target in "$@"; do
   fi
 done
 
-info "Done buildifier on $@."
+ok "Done buildifier on $@."

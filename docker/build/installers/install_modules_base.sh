@@ -19,29 +19,26 @@
 # Fail on first error.
 set -e
 
-cd "$(dirname "${BASH_SOURCE[0]}")"
-. /tmp/installers/installer_base.sh
-
-# apt-get -y update && \
-#    apt-get -y install \
-#    libxml2-dev
+CURR_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+. ${CURR_DIR}/installer_base.sh
 
 # Dependency:
 # openmpi <- boost <- vtk <- pcl
+# bash ${CURR_DIR}/install_mpi.sh
+bash ${CURR_DIR}/install_boost.sh
 
-bash /tmp/installers/install_mpi.sh
-bash /tmp/installers/install_boost.sh
+bash ${CURR_DIR}/install_ffmpeg.sh
 
-bash /tmp/installers/install_ffmpeg.sh
-# Proj4 was required to install VTK
-bash /tmp/installers/install_proj4.sh
-bash /tmp/installers/install_vtk.sh
-
-# OpenCV depends on ffmpeg and vtk
-bash /tmp/installers/install_opencv.sh
+# Proj was required to install VTK
+bash ${CURR_DIR}/install_proj.sh
+bash ${CURR_DIR}/install_vtk.sh
 
 # PCL is required by [ Perception Localization Dreamview ]
-bash /tmp/installers/install_pcl.sh
+bash ${CURR_DIR}/install_pcl.sh
+
+# OpenCV depends on ffmpeg and vtk
+bash ${CURR_DIR}/install_opencv.sh
+
 
 # Clean up cache to reduce layer size.
 apt-get clean && \

@@ -21,12 +21,13 @@ set -e
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
 
-source /tmp/installers/installer_base.sh
+# shellcheck source=./installer_base.sh
+. ./installer_base.sh
 
 apt_get_update_and_install libfftw3-dev
 
 info "Removing static fftw3 libs..."
-find /usr/lib/$(uname -m)-linux-gnu -name "libfftw3*.a" -delete -print
+find "/usr/lib/$(uname -m)-linux-gnu" -name "libfftw3*.a" -delete -print
 
 # Source Package Link:
 # http://www.fftw.org/fftw-3.3.8.tar.gz
